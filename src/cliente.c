@@ -62,7 +62,7 @@ int main(char *argc, char *argv[]){
 		fseek(aval,0,SEEK_SET);
 		fscanf(aval,"%d",&tempValue);
 		fclose(aval);
-		printf("Teste\n");
+		printf("Enviando valor\n");
 		// Enviando para o servidor o valor lido
 		Delay(10000000);
 		write(skt, &tempValue, 4);
