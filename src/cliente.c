@@ -10,7 +10,7 @@ int main(char *argc, char *argv[]){
 	char ip[16], message_server[2000];
 	// Receber o IP do servidor como argumento
 	strcpy(ip, argv[1]);
-	int skt, valor, ldrValue;
+	int skt, valor, tempValue;
     	struct sockaddr_in serv;
 
 	// Abrindo os arquivos que seram usados para ler o sensor e acender o led
@@ -40,7 +40,7 @@ int main(char *argc, char *argv[]){
     memset (&(serv.sin_zero), 0x00, sizeof (serv.sin_zero));
     connect (skt, (struct sockaddr *)&serv, sizeof (struct sockaddr));
 
-	/* Pegando o endereço IP da prípria maquina e escrevendo para que o servidor 
+	/* Pegando o endereço IP da própria maquina e escrevendo para que o servidor 
 	 * saiba o IP, escrito duas vezes para que a função da thread seja capaz de 
 	 * ter essa informação tambem */
 
@@ -56,30 +56,18 @@ int main(char *argc, char *argv[]){
 
 	while(1){
 
-		// Lendo o valor do sensor e jogando no ldrValue
+		// Lendo o valor do sensor e jogando no tempValue
 
-		high = fopen("/sys/class/gpio/gpio60/value", "w");
 		aval = fopen("/sys/devices/ocp.3/helper.15/AIN0", "r");
 		fseek(aval,0,SEEK_SET);
-		fscanf(aval,"%d",&ldrValue);
+		fscanf(aval,"%d",&tempValue);
 		fclose(aval);
-	
+		printf("Teste\n");
 		// Enviando para o servidor o valor lido
 		Delay(10000000);
-		write(skt, &ldrValue, 4);
+		write(skt, &tempValue, 4);
 		Delay(10000000);
 	
-		// Retornado o que a BBB deve fazer, se é acender o LED ou apagar
-		read(skt, &valor, 4);
-
-		if(valor){
-			fprintf(high, "1");
-			fclose(high);
-		}else{
-			fprintf(high, "0");
-			fclose(high);
-		}	
-
 	}
 	
 	return 0;
@@ -91,5 +79,4 @@ static void Delay(unsigned int count){
     while(count--);
       asm("   nop");
 }
-
 
